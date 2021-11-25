@@ -1,28 +1,27 @@
 # LeQua 2022: Learning to Quantify
 
 This repository contains the official [evaluation script](evaluate.py) that will be used
-for evaluating submissions in the LeQua2022 (the 1st edition of the 
-CLEF “Learning to Quantify” lab) competition. 
+for evaluating submissions to the LeQua2022 competition. 
 This repository also provides a [format checker](format_checker.py),
 in order to allow participants to check that the format of their submissions
 is correct.
-Additionally, some helper methods are made available for the conveniency of participants.
+Additionally, some helper methods are made available for the convenience of participants.
 
 ## What is LeQua 2022?
 LeQua2022 is the 1st edition of the CLEF “Learning to Quantify” lab.
-The aim of this competitions is to allow the comparative evaluation 
-of methods for “learning to quantify” in textual datasets, i.e., methods
+The aim of this challenge is to allow the comparative evaluation 
+of methods for “learning to quantify”, i.e., methods
 for training predictors of the relative frequencies of the 
-classes of interest in sets of unlabelled textual documents.
+classes of interest in sets of unlabelled documents.
 For further details, please visit [the official LeQua2022's site](https://lequa2022.github.io/).
 
 ## The evaluation script
 
-The [evaluation script](evaluate.py) takes two results files, one for
-the true prevalence values (ground truth) and another for the estimated prevalence
-values (a submission file), and computes the error (in terms of `mean absolute error` and
-`mean relative absolute error`). The script can be run from command line as follows (use
-`--help` to display the usage information):
+The [evaluation script](evaluate.py) takes two result files, one containing
+the true prevalence values (the ground truth) and another containing the estimated prevalence
+values (a submission file), and computes the estimation error (in terms of the `mean absolute error` and
+`mean relative absolute error` measures). The script can be run from the command line as follows (use
+`--help` to display information on its use):
 
 ```
 usage: evaluate.py [-h] [--output SCORES-PATH]
@@ -40,19 +39,19 @@ optional arguments:
   --output SCORES-PATH  Path where to store the evaluation scores
 ```
 
-The errors are displayed in standard output and, optionally, dumped on a txt file.
+The error valuess are displayed in standard output and, optionally, dumped on a txt file.
 For example:
 
 > python3 evaluate.py T1A ./data/T1A/public/dev_prevalences.csv ./my_submission/estimated_prevalences.csv --output scores.txt
 
 *Note* that the first file corresponds to the ground truth prevalence values, and the second file
-corresponds to the estimated ones. The order is not interchangeable since 
+corresponds to the estimated prevalence values. The order is **not** interchangeable since 
 relative absolute error is not symmetric.
 
 ## The format checker
 
-The [format checker](format_checker.py) serves the purpose of guaranteeing
-participants that their submission files contain no errors.
+The [format checker](format_checker.py) serves the purpose of checking
+that the participants' submission files contain no formatting errors.
 See the usage information (by typing `--help`):
 
 ```
@@ -67,15 +66,15 @@ optional arguments:
   -h, --help           show this help message and exit
 ```
 
-Some mock submission files are provided as examples. For example, running:
+Some mock submission files are provided as examples. For example, running
 
 > python3 format_checker.py ./data/T1A/public/dummy_dev_predictions.T1A.csv
 
-Will produce the output:
+will produce the output
 
 > Format check: passed
 
-If the format is not correct, the check will not pass, and the checker will
+If the format is not correct, the check will not be successful, and the checker will
 display some hint regarding the type of error encountered.
 
 ## The submission files format:
