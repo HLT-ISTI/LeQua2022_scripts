@@ -75,8 +75,8 @@ Will produce the output:
 
 > Format check: passed
 
-If the format is not correct, the check will not pass and some hint on 
-the type of error encountered will be displayed.
+If the format is not correct, the check will not pass, and the checker will
+display some hint regarding the type of error encountered.
 
 ## The submission files format:
 
@@ -86,11 +86,13 @@ The format should comply with the following conditions:
   (`n=2` in tasks T1A and T1B, and `n=28` in tasks T2A and T2B)
 * Every row consists of a document id (an integer) followed by the
   class prevalence values for each class. E.g., a valid row could be 
-  `5,0.7,0.3`, meaning that the document `5.txt` has prevalence values of 0.7 for the class
+  `5,0.7,0.3`, meaning that the sample with id 5 (i.e., the file `5.txt`) has prevalence values of 0.7 for the class
   0 and 0.3 for the class 1.
 * There should be exactly 1000 rows (for tasks T1A and T2A) or exactly 5000 rows 
-  (for tasks T1B and T2B), not counting the header.
+  (for tasks T1B and T2B), after the header.
 * Document ids must not contain gaps, and should start by 0.
+* Prevalence values should be in the range [0,1] for all classes, and sum
+  up to 1 (with an error tolerance of 1E-3).
 
 The easiest way to create a valid submission file is by means of the
 class `ResultSubmission` defined in [data.py](data.py). See the following 
@@ -104,7 +106,8 @@ some of them, and shows how to iterate over data samples both for the
 vector tasks (T1A and T1B -- illustrated for T1A) and for the raw text tasks
 (T2A and T2B -- illustrated for T2B).
 
-Let's simulate the outputs of any quantifier by means of some mock predictions: 
+Before getting started, let's simulate the outputs of any quantifier 
+by means of some mock predictions: 
 
 ```
 from data import *
@@ -118,8 +121,8 @@ def mock_prediction(n_classes):
 
 This first example shows how to create a valid submission file for task T1A.
 Let us assume we already have a trained quantifier, and we want to assess
-its performance on the development set (for which we know the true prevalence
-values). 
+its performance on the development set (for which the true prevalence
+values are known). 
 Assume the development samples are located in `./data/T1A/public/dev_vectors`  
 and the true prevalence are in `./data/T1A/public/dev_prevalences.csv`.
 This could be carried out as follows:
@@ -147,7 +150,8 @@ submission_T1A.dump('mock_submission.T1A.csv')
 Participants can now use the [evaluation script](evaluate.py) to 
 evaluate the quality of their predictions with respect to the ground truth.
 
-After the test set is released, participants will be asked
+After the test set is released (see the [timeline](https://lequa2022.github.io/timeline/)
+for further details), participants will be asked
 to generate predictions for the test samples, and to submit a prediction
 file. Note that the ground truth prevalence values of the test samples
 will not be made available until the competition finishes. 
@@ -158,29 +162,28 @@ and generate a valid submission file.
 submission_T1A = ResultSubmission()
 path_dir = './data/T1A/future/test_vectors'
 
-# note that the iterator has no access to the prevalence values, since a
-# file containint the ground truth values is not indiciated 
+# the iterator has no access to the true prevalence values, since a
+# file containing the ground truth values is not indiciated 
 for id, sample in gen_load_samples(path_dir, load_fn=load_vector_documents):
     submission_T1A.add(id, mock_prediction(n_classes=2))
 submission_T1A.dump('mock_submission.T1A.csv')
 ```
 
-The only difference for tasks T1B and T2B refers to the loader function.
-The function `load_raw_unlabelled_documents` implements this process. 
-This is the complete example:
+The only difference concerning tasks T1B and T2B regards the data loader function.
+The function `load_raw_unlabelled_documents` implements this process; see, e.g.:
 
 ```
 submission_T2B = ResultSubmission()
 path_dir = './data/T2B/public/dev_documents'
 ground_truth_path = './data/T2B/public/dev_prevalences.csv'
-for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, return_id=True, load_fn=load_raw_unlabelled_documents):
+for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, load_fn=load_raw_unlabelled_documents):
     predicted_prevalence = mock_prediction(n_classes=28)
     submission_T2B.add(id, predicted_prevalence)
 submission_T2B.dump('mock_submission.T2B.csv')
 ```
 
-The following functions might be useful as well:
+The following functions might be useful as well (implemented in [data.py](data.py)):
 * load_vector_documents(path, nF=None): loads documents for tasks T1A and T1B. Note that
   only training documents are labelled. Development samples are (and test samples will be)
-  unlabelled, although the format is the same (the label takes value -1 in such cases)
+  unlabelled, although the format is the same (the label takes value -1 in all such cases)
 * load_raw_documents(path): loads labelled documents for tasks T2A and T2B
