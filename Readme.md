@@ -187,7 +187,7 @@ The following functions might be useful as well (implemented in [data.py](data.p
   unlabelled, although the format is the same (the label takes value -1 in all such cases)
 * load_raw_documents(path): loads labelled documents for tasks T2A and T2B
 
-## QuaPy:
+## QuaPy
 
 A number of baseline (and advanced) methods for learning to quantify 
 are implemented in the [QuaPy](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) Python-based, open-source library, 
