@@ -186,3 +186,20 @@ The following functions might be useful as well (implemented in [data.py](data.p
   only training documents are labelled. Development samples are (and test samples will be)
   unlabelled, although the format is the same (the label takes value -1 in all such cases)
 * load_raw_documents(path): loads labelled documents for tasks T2A and T2B
+
+## QuaPy:
+
+A number of baseline (and advanced) methods for learning to quantify 
+are implemented in the [QuaPy](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) Python-based, open-source library, 
+which also contains implementations of standard evaluation 
+measures and evaluation protocols. 
+For participating in this lab you are welcome to use [QuaPy](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) and 
+its tools in any way you might deem suitable (it is not mandatory though).
+
+All the official baselines for LeQua2022 will be implemented as part of QuaPy.
+Check out the branch [lequa2022](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) in which
+the baseline methods are implemented, and in which you can find many useful
+tools for preparing, running, and evaluating your own experiments.
+
+Check paper [Alejandro Moreo, Andrea Esuli, and Fabrizio Sebastiani. QuaPy: A Python-based framework for quantification. Proceedings of the 30th ACM International Conference on Knowledge Management (CIKM 2021), Gold Coast, AU, pp. 4534–4543](https://dl.acm.org/doi/10.1145/3459637.3482015) 
+to learn more about QuaPy.
