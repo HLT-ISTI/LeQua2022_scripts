@@ -8,6 +8,7 @@ is correct.
 Additionally, some helper methods are made available for the convenience of participants.
 
 ## What is LeQua 2022?
+
 LeQua2022 is the 1st edition of the CLEF “Learning to Quantify” lab.
 The aim of this challenge is to allow the comparative evaluation 
 of methods for “learning to quantify”, i.e., methods
@@ -15,12 +16,13 @@ for training predictors of the relative frequencies of the
 classes of interest in sets of unlabelled documents.
 For further details, please visit [the official LeQua2022's site](https://lequa2022.github.io/).
 
+
 ## The evaluation script
 
 The [evaluation script](evaluate.py) takes two result files, one containing
 the true prevalence values (the ground truth) and another containing the estimated prevalence
-values (a submission file), and computes the estimation error (in terms of the `mean absolute error` and
-`mean relative absolute error` measures). The script can be run from the command line as follows (use
+values (a submission file), and computes the estimation error (in terms of the `mean relative absolute error` and
+`mean absolute error` measures). The script can be run from the command line as follows (use
 `--help` to display information on its use):
 
 ```
@@ -68,18 +70,18 @@ optional arguments:
 
 Some mock submission files are provided as examples. For example, running
 
-> python3 format_checker.py ./data/T1A/public/dummy_dev_predictions.T1A.csv
+> python3 format_checker.py ./data/T1A/public/dummy_dev_predictions.txt
 
 will produce the output
 
-> Format check: passed
+> Format check: [passed]
 
 If the format is not correct, the check will not be successful, and the checker will
 display some hint regarding the type of error encountered.
 
 ## The submission files format:
 
-Submission files will consist of `csv` (comma separated values) files.
+Submission files will consist of `comma separated values` files with `txt` extension.
 The format should comply with the following conditions:
 * The header is: `id, 0, 1, <...>, n-1` where `n` is the number of classes 
   (`n=2` in tasks T1A and T1B, and `n=28` in tasks T2A and T2B)
@@ -96,6 +98,8 @@ The format should comply with the following conditions:
 The easiest way to create a valid submission file is by means of the
 class `ResultSubmission` defined in [data.py](data.py). See the following 
 section in which some useful functions are discussed.
+
+Result files should be submitted to CodaLab (further details TBA). 
 
 ## Utilities
 
@@ -122,16 +126,16 @@ This first example shows how to create a valid submission file for task T1A.
 Let us assume we already have a trained quantifier, and we want to assess
 its performance on the development set (for which the true prevalence
 values are known). 
-Assume the development samples are located in `./data/T1A/public/dev_vectors`  
-and the true prevalence are in `./data/T1A/public/dev_prevalences.csv`.
+Assume the development samples are located in `./data/T1A/public/dev_samples`  
+and the true prevalence are in `./data/T1A/public/dev_prevalences.txt`.
 This could be carried out as follows:
 
 ```
 # create a new submission file
 submission_T1A = ResultSubmission()
 
-path_dir = './data/T1A/public/dev_vectors'
-ground_truth_path = './data/T1A/public/dev_prevalences.csv'
+path_dir = './data/T1A/public/dev_samples'
+ground_truth_path = './data/T1A/public/dev_prevalences.txt'
 
 # iterate over devel samples; the task is T1A and so the samples are in vector form;
 # the function that loads samples in vector form is "load_vector_documents"
@@ -143,7 +147,7 @@ for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, return_id=
     submission_T1A.add(id, predicted_prevalence)
     
 # dump to file
-submission_T1A.dump('mock_submission.T1A.csv')
+submission_T1A.dump('mock_submission.T1A.dev.txt')
 ```
 
 Participants can now use the [evaluation script](evaluate.py) to 
@@ -159,33 +163,35 @@ and generate a valid submission file.
 
 ```
 submission_T1A = ResultSubmission()
-path_dir = './data/T1A/future/test_vectors'
+path_dir = './data/T1A/future/test_samples'  # tentative path
 
 # the iterator has no access to the true prevalence values, since a
-# file containing the ground truth values is not indiciated 
+# file containing the ground truth values is not indicated 
 for id, sample in gen_load_samples(path_dir, load_fn=load_vector_documents):
     submission_T1A.add(id, mock_prediction(n_classes=2))
-submission_T1A.dump('mock_submission.T1A.csv')
+submission_T1A.dump('mock_submission.T1A.test.txt')
 ```
 
 The only difference concerning tasks T1B and T2B regards the data loader function.
-The function `load_raw_unlabelled_documents` implements this process; see, e.g.:
+The function `load_raw_unlabelled_documents` implements this process for the
+raw document tasks; see, e.g.:
 
 ```
 submission_T2B = ResultSubmission()
-path_dir = './data/T2B/public/dev_documents'
-ground_truth_path = './data/T2B/public/dev_prevalences.csv'
+path_dir = './data/T2B/public/dev_samples'
+ground_truth_path = './data/T2B/public/dev_prevalences.txt'
 for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, load_fn=load_raw_unlabelled_documents):
     predicted_prevalence = mock_prediction(n_classes=28)
     submission_T2B.add(id, predicted_prevalence)
-submission_T2B.dump('mock_submission.T2B.csv')
+submission_T2B.dump('mock_submission.T2B.dev.csv')
 ```
 
 The following functions might be useful as well (implemented in [data.py](data.py)):
-* load_vector_documents(path, nF=None): loads documents for tasks T1A and T1B. Note that
+* `load_vector_documents(path)`: loads documents for tasks T1A and T1B. Note that
   only training documents are labelled. Development samples are (and test samples will be)
-  unlabelled, although the format is the same (the label takes value -1 in all such cases)
-* load_raw_documents(path): loads labelled documents for tasks T2A and T2B
+  unlabelled, although the same function can be used to read both labelled and unlabelled vectors
+* `load_raw_documents(path)`: loads labelled documents for tasks T2A and T2B. Use 
+  function `load_raw_unlabelled_documents(path)` to read unlabelled documents.
 
 ## QuaPy
 
@@ -194,7 +200,7 @@ are implemented in the [QuaPy](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022)
 which also contains implementations of standard evaluation 
 measures and evaluation protocols. 
 For participating in this lab you are welcome to use [QuaPy](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) and 
-its tools in any way you might deem suitable (it is not mandatory though).
+its tools in any way you might deem suitable (it is not mandatory, though).
 
 All the official baselines for LeQua2022 will be implemented as part of QuaPy.
 Check out the branch [lequa2022](https://github.com/HLT-ISTI/QuaPy/tree/lequa2022) in which

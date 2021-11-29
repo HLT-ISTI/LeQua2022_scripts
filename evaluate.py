@@ -5,25 +5,26 @@ from pathlib import Path
 import constants
 from data import ResultSubmission
 
+
 """
 LeQua2022 Official evaluation script 
 """
 
 def main(args):
-    if args.task in {'T1A', 'T2A'}:
-        sample_size = constants.TXA_SAMPLE_SIZE
-    if args.task in {'T1B', 'T2B'}:
-        sample_size = constants.TXB_SAMPLE_SIZE
+
+    sample_size = constants.SAMPLE_SIZE[args.task]
+
     true_prev = ResultSubmission.load(args.true_prevalences)
     pred_prev = ResultSubmission.load(args.pred_prevalences)
-    mae, mrae = evaluate_submission(true_prev, pred_prev, sample_size)
-    print(f'MAE: {mae:.4f}')
+
+    mrae, mae = evaluate_submission(true_prev, pred_prev, sample_size)
     print(f'MRAE: {mrae:.4f}')
+    print(f'MAE: {mae:.4f}')
 
     if args.output is not None:
         with open(args.output, 'wt') as foo:
-            foo.write(f'MAE: {mae:.4f}\n')
             foo.write(f'MRAE: {mrae:.4f}\n')
+            foo.write(f'MAE: {mae:.4f}\n')
 
 
 def absolute_error(prevs, prevs_hat):
@@ -72,23 +73,23 @@ def evaluate_submission(true_prevs: ResultSubmission, predicted_prevs: ResultSub
         raise ValueError(f'these result files are not comparable since the categories are different: '
                          f'true={true_prevs.n_categories} categories vs. '
                          f'predictions={predicted_prevs.n_categories} categories')
-    ae, rae = [], []
+    rae, ae = [], []
     for sample_id, true_prevalence in true_prevs.iterrows():
         pred_prevalence = predicted_prevs.prevalence(sample_id)
-        ae.append(absolute_error(true_prevalence, pred_prevalence))
         rae.append(relative_absolute_error(true_prevalence, pred_prevalence, eps=1./(2*sample_size)))
+        ae.append(absolute_error(true_prevalence, pred_prevalence))
 
-    ae = np.asarray(ae)
     rae = np.asarray(rae)
+    ae = np.asarray(ae)
 
     if average:
-        ae = ae.mean()
         rae = rae.mean()
+        ae = ae.mean()
 
-    return ae, rae
+    return rae, ae
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='LeQua2022 official evaluation script')
     parser.add_argument('task', metavar='TASK', type=str, choices=['T1A', 'T1B', 'T2A', 'T2B'],
                         help='Task name (T1A, T1B, T2A, T2B)')

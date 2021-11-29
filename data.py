@@ -2,7 +2,6 @@ import os.path
 from typing import Tuple, Union
 import pandas as pd
 import numpy as np
-from sklearn.datasets import load_svmlight_file
 from glob import glob
 
 import constants
@@ -26,7 +25,7 @@ def load_raw_documents(path):
     :param path: path to the labelled collection
     :return: a list of sentences, and a list of labels
     """
-    all_sentences, all_labels = [], []
+    documents, labels = [], []
     file = open(path, 'rt', encoding='utf8').readlines()
     for line in file:
         line = line.strip()
@@ -36,24 +35,26 @@ def load_raw_documents(path):
                 sentence = sentence.strip()
                 label = int(label)
                 if sentence:
-                    all_sentences.append(sentence)
-                    all_labels.append(label)
+                    documents.append(sentence)
+                    labels.append(label)
             except ValueError:
                 print(f'format error in {line}')
-    return all_sentences, all_labels
+    return documents, labels
 
 
-def load_raw_unlabelled_documents(path, vectorizer=None):
+def load_raw_unlabelled_documents(path):
     with open(path, 'rt', encoding='utf-8') as file:
         documents = [d.strip() for d in file.readlines()]
-    if vectorizer:
-        documents = vectorizer.transform(documents)
     return documents, None
 
 
-def load_vector_documents(path, nF=None):
-    X, y = load_svmlight_file(path, n_features=nF, zero_based=True)
-    y = y.astype(int)
+def load_vector_documents(path):
+    D = pd.read_csv(path).to_numpy(dtype=np.float)
+    labelled = D.shape[1] == 301
+    if labelled:
+        X, y = D[:,1:], D[:,0].astype(np.int).flatten()
+    else:
+        X, y = D, None
     return X, y
 
 
@@ -65,7 +66,7 @@ def __gen_load_samples_with_groudtruth(path_dir:str, return_id:bool, ground_trut
 
 
 def __gen_load_samples_without_groudtruth(path_dir:str, return_id:bool, load_fn, **load_kwargs):
-    nsamples = len(glob(os.path.join(path_dir, '*.txt')))
+    nsamples = len(glob(os.path.join(path_dir, f'*.txt')))
     for id in range(nsamples):
         sample, _ = load_fn(os.path.join(path_dir, f'{id}.txt'), **load_kwargs)
         yield (id, sample) if return_id else sample
@@ -109,7 +110,7 @@ class ResultSubmission:
             raise ValueError(f'error: prevalence values for "{sample_id}" already added')
         if prevalence_values.ndim != 1 and prevalence_values.size != self.n_categories:
             raise ValueError(f'error: wrong shape found for prevalence vector {prevalence_values}')
-        if (prevalence_values<0).any() or (prevalence_values>1).any():
+        if (prevalence_values < 0).any() or (prevalence_values > 1).any():
             raise ValueError(f'error: prevalence values out of range [0,1] for "{sample_id}"')
         if np.abs(prevalence_values.sum()-1) > constants.ERROR_TOL:
             raise ValueError(f'error: prevalence values do not sum up to one for "{sample_id}"'

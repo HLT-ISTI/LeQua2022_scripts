@@ -10,9 +10,9 @@ def main(args):
         ResultSubmission.check_file_format(args.prevalence_file)
     except Exception as e:
         print(e)
-        print('Format check: not passed')
+        print('Format check: [not passed]')
     else:
-        print('Format check: passed')
+        print('Format check: [passed]')
 
 
 if __name__=='__main__':
