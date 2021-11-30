@@ -227,8 +227,8 @@ submission_T2B.dump('mock_submission.T2B.dev.txt')
 ```
 
 Finally, note that [data.py](data.py) provides two functions for reading the data samples:
-* `load_vector_documents(path)`: loads documents for tasks T1A and T1B.
-* `load_raw_documents(path)`: loads labelled documents for tasks T2A and T2B.
+* `load_vector_documents(path)`: loads vector documents for tasks T1A and T1B.
+* `load_raw_documents(path)`: loads raw documents for tasks T2A and T2B.
 
 Note that only training documents are labelled. Development samples are (and test samples will be)
 unlabelled, although the same function can be used to read both labelled and unlabelled data samples.
