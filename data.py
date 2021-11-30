@@ -266,15 +266,3 @@ class ResultSubmission:
 
         return df
 
-
-
-
-
-
-
-
-
-
-
-
-
