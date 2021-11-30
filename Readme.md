@@ -20,38 +20,38 @@ For further details, please visit [the official LeQua2022's site](https://lequa2
 
 The datasets of the challenge [are published on Zenodo](https://www.doi.org/10.5281/zenodo.5734465).
 
-There are four [task](https://lequa2022.github.io/tasks/), each with its own data:
+There are four [tasks](https://lequa2022.github.io/tasks/), each with its own data:
 - T1A: binary quantification on numerical vectors.
 - T1B: multiclass quantification on numerical vectors.
-- T2A: binary quantification on text.
-- T2B: multiclass quantification on text.
+- T2A: binary quantification on raw text.
+- T2B: multiclass quantification on raw text.
 
-Data for every task is published in three parts:
-- a `Txy.train_dev.zip` file, released on Dec 1st, 2021, that contains the training and development data.
-- a `Txy.test.zip` file, released on April 22nd, 2022, that contains the test data, without true prevalences, for which the participant have to produce their submissons.
-- a `Txy.gold.zip` file, released after the end of the challenge, that contains the true prevalences for the test data.
+Data for every task is published in three parts (`Txy` is used to denote any task):
+- `Txy.train_dev.zip`: released on Dec 1st, 2021, that contains the training and development data.
+- `Txy.test.zip`: released on April 22nd, 2022, that contains the test data, without true prevalence values, for which the participants have to produce their submissons.
+- `Txy.gold.zip`: released after the end of the challenge, that contains the true prevalence values for the test data.
 
 The `Txy.train_dev.zip` file contains:
-- a `Txy/public/training_data.txt` file that lists the trainings documents, either in vector or text form depending on the task, with labels.
-  All files are csv files, with a header row, and can be loaded, for example, with the Pandas command `df = pandas.read_csv(filename)`.
+- `Txy/public/training_data.txt`: lists the training documents (either in vector or text form depending on the task) with labels.
+  All files are `comma separated values` files in `.txt` format, with a header row, and can be loaded, for example, with the Pandas command `df = pandas.read_csv(filename)`.
 
-  Training data in text form consists of two columns. A `label` column with a zero-based numerical id for the label. A `text` column with the actual document.
+  Training data in text form consists of two columns: a `label` column with a zero-based numerical id for the label, and a `text` column with the actual document.
   
-  Training data in vector form consists of 301 columns. A `label` column with a zero-based numerical id for the label. The remaining 300 columns, labeled for `0` to `299` are the 300 dimensions of the vectors that represent the content of the documents.
+  Training data in vector form consists of 301 columns. The first column, called `label`, contains a zero-based numerical id for the label. The remaining 300 columns, labeled for `0` to `299` are the 300 dimensions of the vectors that represent the content of the documents.
   
-- a `Txy/public/label_map.txt` file that pairs numerical id of labels with a human readable name.
+- `Txy/public/label_map.txt`: pairs numerical id of labels with a human-readable name.
 
-- a `Txy/public/dev_samples` directory that contains samples that can be used to develop the quantification methods. Every file in the directory is a sample for which to predict prevalences of labels. The filename of a sample is a natural number that identifies the sample. The format of files is the same one of the `training_data.txt` file, except that there is no `label` column.
+- `Txy/public/dev_samples`: directory containing the samples that can be used to develop the quantification methods. Every file in the directory is a sample for which to predict prevalence values of labels. The filename of a sample is a natural number that identifies the sample. The format of the files is the same one of the `training_data.txt` file, except that there is no `label` column.
 
-- a `Txy/public/dev_prevalences.txt` file that lists the true prevalences for the development samples. Every row is a sample, the `id` column identifies the sample (id 3 matches sample `3.txt` in the `dev_samples` directory). Columns report the prevalence for all the labels.
+- `Txy/public/dev_prevalences.txt`: lists the true prevalence values for the development samples. Every row corresponds to a different sample; the `id` column identifies the sample (e.g., id 3 indicates that the prevalence values correspond to sample `3.txt` in the `dev_samples` directory). Columns report the prevalence values for all the labels.
 
-- a `Txy/public/dummy_dev_predictions.txt`file that uses the same format of submission files, yet referring to the development samples. A prediction file made following this format, together with the `dev_prevalences.txt` file, can be passed as the argument of the evaluation script (described below) to evaluate a quantification method on the development data.
+- `Txy/public/dummy_dev_predictions.txt`: an example file that uses the same format of submission files, yet referring to the development samples. A prediction file made following this format, together with the `dev_prevalences.txt` file, can be passed as the argument of the evaluation script (described below) to evaluate a quantification method on the development data.
 
-The `Txy.test.zip` file contains:
+The `Txy.test.zip` will contain:
   
-- a `Txy/public/test_samples` directory that contains test samples for which prevalence prediction must be made. Files in the directory have the same format of those in the `dev_samples` directory.
-- 
-- a `Txy/public/dummy_test_predictions.txt` file that shows the format of a submission file for the challenge. Use the format checker (described below) to check your submissions.
+- `Txy/public/test_samples`: directory containing the test samples for which prevalence prediction must be made. Files in the directory have the same format of those in the `dev_samples` directory.
+
+- `Txy/public/dummy_test_predictions.txt`: shows the format of a submission file for the challenge. Use the format checker (described below) to check the format of your submission file.
 
 The `Txy.gold.zip` will contain the true prevalences for the test data.
 
@@ -82,7 +82,7 @@ optional arguments:
 The error valuess are displayed in standard output and, optionally, dumped on a txt file.
 For example:
 
-> python3 evaluate.py T1A ./data/T1A/public/dev_prevalences.csv ./my_submission/estimated_prevalences.csv --output scores.txt
+> python3 evaluate.py T1A ./data/T1A/public/dev_prevalences.txt ./my_submission/estimated_prevalences.txt --output scores.txt
 
 *Note* that the first file corresponds to the ground truth prevalence values, and the second file
 corresponds to the estimated prevalence values. The order is **not** interchangeable since 
@@ -161,7 +161,9 @@ def mock_prediction(n_classes):
 ```
 
 This first example shows how to create a valid submission file for task T1A.
-Let us assume we already have a trained quantifier, and we want to assess
+Let us assume we already have a trained quantifier (in this example, one that
+always returns mock predictions), 
+and we want to assess
 its performance on the development set (for which the true prevalence
 values are known). 
 Assume the development samples are located in `./data/T1A/public/dev_samples`  
@@ -196,7 +198,7 @@ for further details), participants will be asked
 to generate predictions for the test samples, and to submit a prediction
 file. Note that the ground truth prevalence values of the test samples
 will not be made available until the competition finishes. 
-The following script illustrates how to iterate over test examples
+The following script illustrates how to iterate over test samples
 and generate a valid submission file.
 
 ```
@@ -211,25 +213,25 @@ submission_T1A.dump('mock_submission.T1A.test.txt')
 ```
 
 The only difference concerning tasks T1B and T2B regards the data loader function.
-The function `load_raw_unlabelled_documents` implements this process for the
+The function `load_raw_documents` implements this process for the
 raw document tasks; see, e.g.:
 
 ```
 submission_T2B = ResultSubmission()
 path_dir = './data/T2B/public/dev_samples'
 ground_truth_path = './data/T2B/public/dev_prevalences.txt'
-for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, load_fn=load_raw_unlabelled_documents):
+for id, sample, prev in gen_load_samples(path_dir, ground_truth_path, load_fn=load_raw_documents):
     predicted_prevalence = mock_prediction(n_classes=28)
     submission_T2B.add(id, predicted_prevalence)
-submission_T2B.dump('mock_submission.T2B.dev.csv')
+submission_T2B.dump('mock_submission.T2B.dev.txt')
 ```
 
-The following functions might be useful as well (implemented in [data.py](data.py)):
-* `load_vector_documents(path)`: loads documents for tasks T1A and T1B. Note that
-  only training documents are labelled. Development samples are (and test samples will be)
-  unlabelled, although the same function can be used to read both labelled and unlabelled vectors
-* `load_raw_documents(path)`: loads labelled documents for tasks T2A and T2B. Use 
-  function `load_raw_unlabelled_documents(path)` to read unlabelled documents.
+Finally, note that [data.py](data.py) provides two functions for reading the data samples:
+* `load_vector_documents(path)`: loads documents for tasks T1A and T1B.
+* `load_raw_documents(path)`: loads labelled documents for tasks T2A and T2B.
+
+Note that only training documents are labelled. Development samples are (and test samples will be)
+unlabelled, although the same function can be used to read both labelled and unlabelled data samples.
 
 ## QuaPy
 
