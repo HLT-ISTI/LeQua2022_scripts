@@ -127,8 +127,9 @@ The format should comply with the following conditions:
   class prevalence values for each class. E.g., a valid row could be 
   `5,0.7,0.3`, meaning that the sample with id 5 (i.e., the file `5.txt`) has prevalence values of 0.7 for the class
   0 and 0.3 for the class 1.
-* There should be exactly 1000 rows (for tasks T1A and T2A) or exactly 5000 rows 
-  (for tasks T1B and T2B), after the header.
+* There should be exactly 5000 rows 
+  (regardless of the task), after the header. 
+  (Do not confuse with the development result files, that have only 1000 rows, and are nontheless not meant to be submitted.)
 * Document ids must not contain gaps, and should start by 0.
 * Prevalence values should be in the range [0,1] for all classes, and sum
   up to 1 (with an error tolerance of 1E-3).
